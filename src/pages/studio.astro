@@ -1,0 +1,59 @@
+---
+import PageLayout from "../layouts/PageLayout.astro"
+import Container from "../components/Container.astro"
+---
+
+<PageLayout title="Studio" description="About the artist and studio practice of Elizabeth Le Grange">
+  
+  <!-- Full-Width Edge-to-Edge Showcase Banner pushed below the sticky header -->
+  <div class="w-screen relative left-1/2 right-1/2 -mx-[50vw] overflow-hidden bg-neutral-900 flex justify-center items-center mt-20">
+    <img 
+      src="/intent.jpeg" 
+      alt="Intent - Triptych oil painting spanning the studio landscape" 
+      class="w-full h-auto object-cover opacity-90 brightness-[0.95]"
+    />
+  </div>
+
+  <Container>
+    <div class="mx-auto max-w-screen-md space-y-12 pt-12 pb-16">
+
+      <header class="space-y-2 text-center">
+        <h1 class="text-3xl font-serif tracking-wide text-black dark:text-white italic">
+          Studio Practice
+        </h1>
+        <p class="text-[10px] uppercase tracking-[0.2em] text-neutral-400 dark:text-neutral-500 font-light">
+          Contemporary Fine Art & Material Exploration
+        </p>
+      </header>
+
+      <main class="space-y-6 text-neutral-800 dark:text-neutral-200 leading-relaxed font-light text-base">
+        <p>
+          My studio space is dedicated to investigating human relationships and the silent ways we connect, distance, and relate to one another. I view the human figure not merely as a subject, but as a vast, expressive landscape—using form, weight, gesture, and physical space to map out internal psychological territories. Through my work, I use visual art to explore a different kind of language, bypassing verbal expression to capture the raw gravity of human interaction.
+        </p>
+
+        <p>
+          My current practice centers on oil painting across a diverse range of scales—from intimate small-scale studies to an ambitious, extra-large format canvas currently developing on my easel. This exploration of scale is complemented by medium-scale charcoal drawings, where the immediacy of the charcoal allows for a raw, tactile mapping of form.
+        </p>
+
+        <p>
+          This space also serves as the intersection where my past and present creative lives meet. For over two decades in Cape Town, South Africa, I operated a creative practice focused on specialized textile design and fabric manipulation. Today, those structural, tactile sensibilities—along with my practice in handcrafted sterling silver and gold jewelry design—inform the textures, layering, and physical depth I bring to the painted canvas.
+        </p>
+      </main>
+
+      <!-- Studio Images Section Start -->
+      <section class="pt-8 border-t border-neutral-100 dark:border-neutral-900 flex flex-col items-center">
+        
+        <div class="w-full bg-neutral-50 dark:bg-neutral-900 overflow-hidden shadow-sm flex justify-center">
+          <img 
+            src="/elsastudio.jpeg" 
+            alt="Studio workspace overview showing material exploration and paintings in progress" 
+            class="w-full max-w-2xl h-auto object-contain max-h-[85vh]"
+          />
+        </div>
+
+      </section>
+      <!-- Studio Images Section End -->
+
+    </div>
+  </Container>
+</PageLayout>
