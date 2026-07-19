@@ -4,7 +4,7 @@ import PageLayout from "@layouts/PageLayout.astro";
 import TopLayout from "@layouts/TopLayout.astro";
 import BottomLayout from "@layouts/BottomLayout.astro";
 import SearchCollection from "@components/SearchCollection";
-import { PROJECTS } from "@consts";
+import { SITE } from "@consts";
 import type { CollectionEntry } from "astro:content";
 
 const projects = (await getCollection("projects"))
@@ -19,14 +19,14 @@ const estimated_initial_size =
   28 + projects.length * 158 + (projects.length - 1) * 12;
 ---
 
-<PageLayout title={PROJECTS.TITLE} description={PROJECTS.DESCRIPTION}>
+<PageLayout title="Projects" description="Artistic projects and collaborations by Elizabeth Le Grange">
   <TopLayout>
     <div class="animate">
       <h1 class="text-3xl font-semibold text-black dark:text-white mt-2">
-        {PROJECTS.TITLE}
+        Projects
       </h1>
-      <div class="mt-1">
-        {PROJECTS.DESCRIPTION}
+      <div class="mt-1 text-neutral-500 dark:text-neutral-400 font-light text-sm">
+        New collections, specialized design series, and collaborative projects.
       </div>
     </div>
   </TopLayout>
