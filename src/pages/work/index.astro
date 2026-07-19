@@ -3,7 +3,7 @@ import { getCollection } from "astro:content"
 import PageLayout from "@layouts/PageLayout.astro"
 import TopLayout from "@layouts/TopLayout.astro"
 import BottomLayout from "@layouts/BottomLayout.astro"
-import { WORK } from "@consts"
+import { SITE } from "@consts"
 
 const collection = await getCollection("work")
 
@@ -25,6 +25,38 @@ function formatWorkDate(input: Date | string) {
 
   const year = new Date(input).getFullYear()
   return `${month} ${year}`
+}
+---
+
+<PageLayout title="Work" description="Professional history and creative timelines of Elizabeth Le Grange">
+  <TopLayout>
+    <div class="animate">
+      <h1 class="text-3xl font-semibold text-black dark:text-white mt-2">
+        Work History
+      </h1>
+      <div class="mt-1 text-neutral-500 dark:text-neutral-400 font-light text-sm">
+        A timeline of professional history, textile design, and jewelry management.
+      </div>
+    </div>
+  </TopLayout>
+  <BottomLayout>
+    <div class="animate space-y-8">
+      {work.map((item) => (
+        <div class="space-y-1">
+          <div class="text-sm font-semibold text-black dark:text-white">
+            {item.data.company}
+          </div>
+          <div class="text-xs text-neutral-500 dark:text-neutral-400">
+            {item.data.role} &bull; {formatWorkDate(item.data.dateStart)} - {item.data.dateEnd ? formatWorkDate(item.data.dateEnd) : "Present"}
+          </div>
+          <div class="text-sm text-neutral-700 dark:text-neutral-300 font-light pt-1 leading-relaxed">
+            <item.Content />
+          </div>
+        </div>
+      ))}
+    </div>
+  </BottomLayout>
+</PageLayout>
 }
 ---
 
