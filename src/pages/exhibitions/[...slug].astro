@@ -1,0 +1,48 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import { SITE, EXHIBITIONS } from "@consts";
+---
+
+<PageLayout title={EXHIBITIONS.TITLE} description={EXHIBITIONS.DESCRIPTION}>
+  <Container>
+    <div class="space-y-12 py-12 max-w-2xl mx-auto">
+      
+      <!-- Page Title -->
+      <header class="space-y-2 border-b border-neutral-100 dark:border-neutral-800 pb-6">
+        <h1 class="text-3xl font-light tracking-wide text-black dark:text-white uppercase">
+          Exhibitions
+        </h1>
+        <p class="text-neutral-500 text-sm italic">
+          Selected Group & Solo Showcases
+        </p>
+      </header>
+
+      <!-- Clean Minimalist List -->
+      <main class="space-y-10">
+        
+        <div class="space-y-1">
+          <h3 class="text-md font-medium text-black dark:text-white">Group & Studio Showcases</h3>
+          <p class="text-neutral-500 text-sm">Habustan Shel Saba Yossi, Israel — 2020 – Present</p>
+        </div>
+
+        <div class="space-y-1">
+          <h3 class="text-md font-medium text-black dark:text-white">KKNK Exhibition (Klein Karoo Nasionale Kunstefees)</h3>
+          <p class="text-neutral-500 text-sm">Featured Artist, South Africa — 1994 – 2018</p>
+        </div>
+
+        <div class="space-y-1">
+          <h3 class="text-md font-medium text-black dark:text-white">Ruth Prowse Art School Group Exhibition</h3>
+          <p class="text-neutral-500 text-sm">Cape Town, South Africa — 1994 – 1995</p>
+        </div>
+
+        <div class="space-y-1">
+          <h3 class="text-md font-medium text-black dark:text-white">College of Cape Town Group Exhibition</h3>
+          <p class="text-neutral-500 text-sm">Cape Town, South Africa — 1992 – 1994</p>
+        </div>
+
+      </main>
+
+    </div>
+  </Container>
+</PageLayout>

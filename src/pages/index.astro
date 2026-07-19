@@ -1,0 +1,285 @@
+---
+import { getCollection } from "astro:content"
+import PageLayout from "../layouts/PageLayout.astro"
+
+const posts = (await getCollection("blog"))
+  .filter(post => !post.data.draft)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+---
+
+<PageLayout title="Home" description="Portfolio of Elizabeth Le Grange">
+
+  <div class="relative bg-white dark:bg-black min-h-screen">
+    <div class="mx-auto max-w-screen-md p-5 space-y-16 pt-16 pb-0">
+
+      <section class="space-y-16">
+        
+        <div class="space-y-3 flex flex-col items-center">
+          <div class="w-full bg-neutral-50 dark:bg-neutral-900 overflow-hidden shadow-sm flex justify-center">
+            <img 
+              src="/flow.jpeg" 
+              alt="Figurative oil painting exploring form, flight, and weightless synchronicity" 
+              class="w-full max-w-2xl h-auto object-contain max-h-[85vh]"
+            />
+          </div>
+          <div class="text-center space-y-1 max-w-xl">
+            <h2 class="text-lg font-serif tracking-wide text-black dark:text-white italic">
+              Flow
+            </h2>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-neutral-400 dark:text-neutral-500 font-light">
+              Oil on Stretched Canvas &bull; 60 x 80 cm &bull; 2025
+            </p>
+            <p class="text-xs text-neutral-500 dark:text-neutral-400 font-light leading-relaxed">
+              A compelling figurative study exploring themes of flight and anatomical synchronicity. Emerging from a warm, atmospheric haze, the layered, gestural contours of floating bodies convey a profound sense of shared momentum and weightless transition.
+            </p>
+          </div>
+        </div>
+
+        <div class="space-y-3 flex flex-col items-center">
+          <div class="w-full bg-neutral-50 dark:bg-neutral-900 overflow-hidden shadow-sm flex justify-center">
+            <img 
+              src="/threshold.jpeg" 
+              alt="Figurative oil painting exploring tension, surrender, and contrast of forms" 
+              class="w-full max-w-2xl h-auto object-contain max-h-[85vh]"
+            />
+          </div>
+          <div class="text-center space-y-1 max-w-xl">
+            <h2 class="text-lg font-serif tracking-wide text-black dark:text-white italic">
+              Threshold
+            </h2>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-neutral-400 dark:text-neutral-500 font-light">
+              Oil on Stretched Canvas &bull; 60 x 80 cm &bull; 2025
+            </p>
+            <p class="text-xs text-neutral-500 dark:text-neutral-400 font-light leading-relaxed">
+              A striking oil on canvas study exploring the dualities of tension and surrender. The juxtaposition of a dynamic, arching form suspended against a quiet, curled silhouette captures a delicate balance between external release and internal contemplation.
+            </p>
+          </div>
+        </div>
+
+        <div class="space-y-3 flex flex-col items-center">
+          <div class="w-full bg-neutral-50 dark:bg-neutral-900 overflow-hidden shadow-sm flex justify-center">
+            <img 
+              src="/liftoff.jpeg" 
+              alt="Figurative oil painting capturing a moment of lifting, suspension, and deep emotional support" 
+              class="w-full max-w-2xl h-auto object-contain max-h-[85vh]"
+            />
+          </div>
+          <div class="text-center space-y-1 max-w-xl">
+            <h2 class="text-lg font-serif tracking-wide text-black dark:text-white italic">
+              Liftoff
+            </h2>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-neutral-400 dark:text-neutral-500 font-light">
+              Oil on Stretched Canvas &bull; 60 x 80 cm &bull; 2025
+            </p>
+            <p class="text-xs text-neutral-500 dark:text-neutral-400 font-light leading-relaxed">
+              An evocative oil painting capturing a profound moment of lifting and physical suspension. One figure arches gracefully overhead, supported intimately by the form below, creating a powerful narrative of trust, shared gravity, and emotional elevation against a deep, twilight background.
+            </p>
+          </div>
+        </div>
+
+        <!-- Intent Artwork Start -->
+        <div class="space-y-3 flex flex-col items-center">
+          <div class="w-full bg-neutral-50 dark:bg-neutral-900 overflow-hidden shadow-sm flex justify-center">
+            <img 
+              src="/intent.jpeg" 
+              alt="Intent - Triptych oil painting exploring physical direction, alignment, and shared resolve" 
+              class="w-full max-w-2xl h-auto object-contain max-h-[85vh]"
+            />
+          </div>
+          <div class="text-center space-y-1 max-w-xl">
+            <h2 class="text-lg font-serif tracking-wide text-black dark:text-white italic">
+              Intent
+            </h2>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-neutral-400 dark:text-neutral-500 font-light">
+              Oil on Canvas &bull; Triptych (3 Panels, 60 x 80 cm each) &bull; 2026
+            </p>
+            <p class="text-xs text-neutral-500 dark:text-neutral-400 font-light leading-relaxed">
+              A powerful three-panel triptych exploring collective momentum and physical alignment. Across the expansive surface, fluid yet deliberate gestural forms interact with an underlying sense of shared purpose, mapping the body as both an anatomical structure and an emotional landscape of concentrated resolve.
+            </p>
+          </div>
+        </div>
+        <!-- Intent Artwork End -->
+
+        <!-- Touch Artwork Start -->
+        <div class="space-y-3 flex flex-col items-center">
+          <div class="w-full bg-neutral-50 dark:bg-neutral-900 overflow-hidden shadow-sm flex justify-center">
+            <img 
+              src="/touch.jpeg" 
+              alt="Touch - Diptych oil painting exploring proximity, physical contact, and unspoken dialogue" 
+              class="w-full max-w-2xl h-auto object-contain max-h-[85vh]"
+            />
+          </div>
+          <div class="text-center space-y-1 max-w-xl">
+            <h2 class="text-lg font-serif tracking-wide text-black dark:text-white italic">
+              Touch
+            </h2>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-neutral-400 dark:text-neutral-500 font-light">
+              Oil on Canvas &bull; Diptych (2 Panels, 60 x 80 cm each) &bull; 2026
+            </p>
+            <p class="text-xs text-neutral-500 dark:text-neutral-400 font-light leading-relaxed">
+              An intimate diptych investigating the boundary of physical proximity and tactile contact. Spanning two interconnected panels, the atmospheric, layered contours capture the precise threshold where forms meet, translating an unspoken shared language of vulnerability and physical weightlessness.
+            </p>
+          </div>
+        </div>
+        <!-- Touch Artwork End -->
+
+        <!-- Enough Artwork Start -->
+        <div class="space-y-3 flex flex-col items-center">
+          <div class="w-full bg-neutral-50 dark:bg-neutral-900 overflow-hidden shadow-sm flex justify-center">
+            <img 
+              src="/enough.jpeg" 
+              alt="Enough - Oil on canvas painting exploring dynamic composition and expressive line work" 
+              class="w-full max-w-2xl h-auto object-contain max-h-[85vh]"
+            />
+          </div>
+          <div class="text-center space-y-1 max-w-xl">
+            <h2 class="text-lg font-serif tracking-wide text-black dark:text-white italic">
+              Enough
+            </h2>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-neutral-400 dark:text-neutral-500 font-light">
+              Oil on Canvas &bull; 30 x 40 cm &bull; 2026
+            </p>
+            <p class="text-xs text-neutral-500 dark:text-neutral-400 font-light leading-relaxed">
+              An evocative oil on canvas study focusing on emotional depth through structural simplicity. The compact scale heightens the intimacy of the form, balancing minimalist negative space with highly intentional, expressive brushwork.
+            </p>
+          </div>
+        </div>
+        <!-- Enough Artwork End -->
+
+        <!-- They (Oil) Artwork Start -->
+        <div class="space-y-3 flex flex-col items-center">
+          <div class="w-full bg-neutral-50 dark:bg-neutral-900 overflow-hidden shadow-sm flex justify-center">
+            <img 
+              src="/they.jpeg" 
+              alt="They - Oil on canvas figurative painting mapping an unspoken shared language" 
+              class="w-full max-w-2xl h-auto object-contain max-h-[85vh]"
+            />
+          </div>
+          <div class="text-center space-y-1 max-w-xl">
+            <h2 class="text-lg font-serif tracking-wide text-black dark:text-white italic">
+              They
+            </h2>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-neutral-400 dark:text-neutral-500 font-light">
+              Oil on Canvas &bull; 50 x 50 cm &bull; 2026
+            </p>
+            <p class="text-xs text-neutral-500 dark:text-neutral-400 font-light leading-relaxed">
+              A powerful square-format oil work continuing the exploration of internal landscapes and interconnected figures. Layered transitions and textured atmospheres give substance to the space between forms, capturing a subtle, shared structural tension.
+            </p>
+          </div>
+        </div>
+        <!-- They (Oil) Artwork End -->
+
+        <div class="space-y-3 flex flex-col items-center">
+          <div class="w-full bg-neutral-50 dark:bg-neutral-900 overflow-hidden shadow-sm flex justify-center">
+            <img 
+              src="/charcoal-sketch-suspended-motion.jpeg" 
+              alt="Dynamic figurative charcoal sketch exploring form and movement" 
+              class="w-full max-w-2xl h-auto object-contain max-h-[85vh]"
+            />
+          </div>
+          <div class="text-center space-y-1 max-w-xl">
+            <h2 class="text-lg font-serif tracking-wide text-black dark:text-white italic">
+              Charcoal Sketch Suspended Motion
+            </h2>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-neutral-400 dark:text-neutral-500 font-light">
+              Charcoal on Paper &bull; 50 x 70 cm &bull; 2026
+            </p>
+            <p class="text-xs text-neutral-500 dark:text-neutral-400 font-light leading-relaxed">
+              A dynamic, expressive charcoal study exploring form and movement. Broad, textured strokes and sharp kinetic lines blend figurative elements with abstract energy, creating a powerful sense of weightlessness.
+            </p>
+          </div>
+        </div>
+
+        <div class="space-y-3 flex flex-col items-center">
+          <div class="w-full bg-neutral-50 dark:bg-neutral-900 overflow-hidden shadow-sm flex justify-center">
+            <img 
+              src="/sketch3.jpeg" 
+              alt="Powerful vertical figurative charcoal sketch with ascending figures" 
+              class="w-full max-w-2xl h-auto object-contain max-h-[85vh]"
+            />
+          </div>
+          <div class="text-center space-y-1 max-w-xl">
+            <h2 class="text-lg font-serif tracking-wide text-black dark:text-white italic">
+              Charcoal Sketch Fractured Gravity
+            </h2>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-neutral-400 dark:text-neutral-500 font-light">
+              Charcoal on Paper &bull; 50 x 70 cm &bull; 2026
+            </p>
+            <p class="text-xs text-neutral-500 dark:text-neutral-400 font-light leading-relaxed">
+              A compelling vertical charcoal study depicting layered, ascending forms. Sharp gestural marks and heavy, cross-hatched shading create an intense sense of physical momentum, struggle, and emotional release.
+            </p>
+          </div>
+        </div>
+
+        <div class="space-y-3 flex flex-col items-center">
+          <div class="w-full bg-neutral-50 dark:bg-neutral-900 overflow-hidden shadow-sm flex justify-center">
+            <img 
+              src="/charcoal-sketch-shifting-ground.jpeg" 
+              alt="Expressive charcoal sketch showing rich texture and broken geometric marks" 
+              class="w-full max-w-2xl h-auto object-contain max-h-[85vh]"
+            />
+          </div>
+          <div class="text-center space-y-1 max-w-xl">
+            <h2 class="text-lg font-serif tracking-wide text-black dark:text-white italic">
+              Charcoal Sketch Shifting Ground
+            </h2>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-neutral-400 dark:text-neutral-500 font-light">
+              Charcoal on Paper &bull; 50 x 70 cm &bull; 2026
+            </p>
+            <p class="text-xs text-neutral-500 dark:text-neutral-400 font-light leading-relaxed">
+              A powerful, deeply textured charcoal study characterized by bold gestural lines and dense, geometric shading. Sharp, energetic markings slice across fluid bodily contours, creating a striking sense of internal friction, fragmentation, and raw physical movement.
+            </p>
+          </div>
+        </div>
+
+        <!-- Charcoal Sketch: Go Start -->
+        <div class="space-y-3 flex flex-col items-center">
+          <div class="w-full bg-neutral-50 dark:bg-neutral-900 overflow-hidden shadow-sm flex justify-center">
+            <img 
+              src="/go.jpeg" 
+              alt="Dynamic figurative charcoal sketch exploring momentum and forward intent" 
+              class="w-full max-w-2xl h-auto object-contain max-h-[85vh]"
+            />
+          </div>
+          <div class="text-center space-y-1 max-w-xl">
+            <h2 class="text-lg font-serif tracking-wide text-black dark:text-white italic">
+              Charcoal Sketch Go
+            </h2>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-neutral-400 dark:text-neutral-500 font-light">
+              Charcoal on Paper &bull; 50 x 70 cm &bull; 2026
+            </p>
+            <p class="text-xs text-neutral-500 dark:text-neutral-400 font-light leading-relaxed">
+              A powerful work driven by bold gestural lines and deep kinetic markings. The piece emphasizes structural force and immediate physical intent, pulling forms into a state of continuous transition.
+            </p>
+          </div>
+        </div>
+        <!-- Charcoal Sketch: Go End -->
+
+        <!-- Charcoal Sketch: Them Start -->
+        <div class="space-y-3 flex flex-col items-center">
+          <div class="w-full bg-neutral-50 dark:bg-neutral-900 overflow-hidden shadow-sm flex justify-center">
+            <img 
+              src="/them.jpeg" 
+              alt="Figurative charcoal sketch exploring alignment and gestural weightlessness" 
+              class="w-full max-w-2xl h-auto object-contain max-h-[85vh]"
+            />
+          </div>
+          <div class="text-center space-y-1 max-w-xl">
+            <h2 class="text-lg font-serif tracking-wide text-black dark:text-white italic">
+              Charcoal Sketch Them
+            </h2>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-neutral-400 dark:text-neutral-500 font-light">
+              Charcoal on Paper &bull; 50 x 70 cm &bull; 2026
+            </p>
+            <p class="text-xs text-neutral-500 dark:text-neutral-400 font-light leading-relaxed">
+              An expressive charcoal study focusing on swift, delicate lines and the interplay of negative space. The raw texture captures a transient moment of equilibrium and shared physical momentum.
+            </p>
+          </div>
+        </div>
+        <!-- Charcoal Sketch: Them End -->
+
+      </section>
+
+    </div>
+  </div>
+</PageLayout>
