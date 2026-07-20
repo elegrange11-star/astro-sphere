@@ -1,4 +1,3 @@
----
 import { getCollection } from "astro:content"
 import PageLayout from "../layouts/PageLayout.astro"
 
@@ -76,6 +75,29 @@ const posts = (await getCollection("blog"))
             </p>
           </div>
         </div>
+
+        <!-- Hey Artwork Start -->
+        <div class="space-y-3 flex flex-col items-center">
+          <div class="w-full bg-neutral-50 dark:bg-neutral-900 overflow-hidden shadow-sm flex justify-center">
+            <img 
+              src="/hey.jpeg" 
+              alt="Hey - Oil on canvas macro study of human form and skin texture as landscape" 
+              class="w-full max-w-2xl h-auto object-contain max-h-[85vh]"
+            />
+          </div>
+          <div class="text-center space-y-1 max-w-xl">
+            <h2 class="text-lg font-serif tracking-wide text-black dark:text-white italic">
+              Hey
+            </h2>
+            <p class="text-[10px] uppercase tracking-[0.2em] text-neutral-400 dark:text-neutral-500 font-light">
+              Oil on Canvas &bull; 76 x 113 cm &bull; 2026
+            </p>
+            <p class="text-xs text-neutral-500 dark:text-neutral-400 font-light leading-relaxed">
+              An intimate, macro study of flesh and form. Soft palette tones paired with heavy, expressive surface texture transform a gesture into a quiet, monumental scene.
+            </p>
+          </div>
+        </div>
+        <!-- Hey Artwork End -->
 
         <!-- Intent Artwork Start -->
         <div class="space-y-3 flex flex-col items-center">
