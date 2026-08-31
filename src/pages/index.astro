@@ -10,10 +10,11 @@ const posts = (await getCollection("blog"))
 <PageLayout title="Home" description="Portfolio of Elizabeth Le Grange">
 
   <div class="relative bg-white dark:bg-black min-h-screen">
-    <div class="mx-auto max-w-screen-md p-5 space-y-16 pt-16 pb-0">
+    <div class="mx-auto max-w-screen-2xl p-5 space-y-24 pt-16 pb-24">
 
-      <section class="space-y-16">
-        
+      <section class="space-y-24">
+
+        <!-- Flow Start -->
         <div class="space-y-3 flex flex-col items-center">
           <div class="w-full bg-neutral-50 dark:bg-neutral-900 overflow-hidden shadow-sm flex justify-center">
             <img 
@@ -34,7 +35,9 @@ const posts = (await getCollection("blog"))
             </p>
           </div>
         </div>
+        <!-- Flow End -->
 
+        <!-- Threshold Start -->
         <div class="space-y-3 flex flex-col items-center">
           <div class="w-full bg-neutral-50 dark:bg-neutral-900 overflow-hidden shadow-sm flex justify-center">
             <img 
@@ -55,7 +58,9 @@ const posts = (await getCollection("blog"))
             </p>
           </div>
         </div>
+        <!-- Threshold End -->
 
+        <!-- Liftoff Start -->
         <div class="space-y-3 flex flex-col items-center">
           <div class="w-full bg-neutral-50 dark:bg-neutral-900 overflow-hidden shadow-sm flex justify-center">
             <img 
@@ -76,6 +81,7 @@ const posts = (await getCollection("blog"))
             </p>
           </div>
         </div>
+        <!-- Liftoff End -->
 
         <!-- Intent Artwork Start -->
         <div class="space-y-3 flex flex-col items-center">
@@ -99,6 +105,56 @@ const posts = (await getCollection("blog"))
           </div>
         </div>
         <!-- Intent Artwork End -->
+
+        <!-- Gam Zeh Ya'avor I & II Side-by-Side Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start w-full max-w-6xl mx-auto">
+          
+          <!-- Gam Zeh Ya'avor I -->
+          <div class="space-y-4 flex flex-col items-center w-full">
+            <div class="w-full bg-neutral-50 dark:bg-neutral-900 overflow-hidden shadow-sm flex justify-center p-4 min-h-[350px] items-center">
+              <img 
+                src="/gamzeyaavor1.jpg" 
+                alt="Gam Zeh Ya'avor I - Figurative oil painting" 
+                class="w-full h-auto object-contain max-h-[60vh]"
+              />
+            </div>
+            <div class="text-center space-y-2 px-2">
+              <h2 class="text-xl font-serif tracking-wide text-black dark:text-white italic">
+                Gam Zeh Ya'avor I
+              </h2>
+              <p class="text-[10px] uppercase tracking-[0.2em] text-neutral-400 dark:text-neutral-500 font-light">
+                Oil on Stretched Canvas &bull; 87 x 180 cm &bull; 2026
+              </p>
+              <p class="text-xs text-neutral-500 dark:text-neutral-400 font-light leading-relaxed max-w-md mx-auto">
+                An evocative figurative study grounding human form within a state of quiet transformation. Soft atmospheric layers and expressive brushwork reflect on impermanence, surrender, and enduring resilience.
+              </p>
+            </div>
+          </div>
+
+          <!-- Gam Zeh Ya'avor II -->
+          <div class="space-y-4 flex flex-col items-center w-full">
+            <div class="w-full bg-neutral-50 dark:bg-neutral-900 overflow-hidden shadow-sm flex justify-center p-4 min-h-[350px] items-center">
+              <img 
+                src="/gamzhyaavor2.jpeg" 
+                alt="Gam Zeh Ya'avor II - Figurative oil painting" 
+                class="w-full h-auto object-contain max-h-[60vh]"
+              />
+            </div>
+            <div class="text-center space-y-2 px-2">
+              <h2 class="text-xl font-serif tracking-wide text-black dark:text-white italic">
+                Gam Zeh Ya'avor II
+              </h2>
+              <p class="text-[10px] uppercase tracking-[0.2em] text-neutral-400 dark:text-neutral-500 font-light">
+                Oil on Stretched Canvas &bull; 145 x 110 cm &bull; 2026
+              </p>
+              <p class="text-xs text-neutral-500 dark:text-neutral-400 font-light leading-relaxed max-w-md mx-auto">
+                A monumental continuation exploring the physical and emotional landscapes of form, transient energy, and quiet restoration.
+              </p>
+            </div>
+          </div>
+
+        </div>
+        <!-- End Side-by-Side Section -->
 
         <!-- Hey Artwork Start -->
         <div class="space-y-3 flex flex-col items-center">
@@ -192,6 +248,7 @@ const posts = (await getCollection("blog"))
         </div>
         <!-- They (Oil) Artwork End -->
 
+        <!-- Charcoal Sketch Suspended Motion Start -->
         <div class="space-y-3 flex flex-col items-center">
           <div class="w-full bg-neutral-50 dark:bg-neutral-900 overflow-hidden shadow-sm flex justify-center">
             <img 
@@ -212,7 +269,9 @@ const posts = (await getCollection("blog"))
             </p>
           </div>
         </div>
+        <!-- Charcoal Sketch Suspended Motion End -->
 
+        <!-- Charcoal Sketch Fractured Gravity Start -->
         <div class="space-y-3 flex flex-col items-center">
           <div class="w-full bg-neutral-50 dark:bg-neutral-900 overflow-hidden shadow-sm flex justify-center">
             <img 
@@ -233,7 +292,9 @@ const posts = (await getCollection("blog"))
             </p>
           </div>
         </div>
+        <!-- Charcoal Sketch Fractured Gravity End -->
 
+        <!-- Charcoal Sketch Shifting Ground Start -->
         <div class="space-y-3 flex flex-col items-center">
           <div class="w-full bg-neutral-50 dark:bg-neutral-900 overflow-hidden shadow-sm flex justify-center">
             <img 
@@ -254,6 +315,7 @@ const posts = (await getCollection("blog"))
             </p>
           </div>
         </div>
+        <!-- Charcoal Sketch Shifting Ground End -->
 
         <!-- Charcoal Sketch: Go Start -->
         <div class="space-y-3 flex flex-col items-center">
@@ -305,4 +367,5 @@ const posts = (await getCollection("blog"))
 
     </div>
   </div>
+
 </PageLayout>
