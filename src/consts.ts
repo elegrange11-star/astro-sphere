@@ -7,6 +7,9 @@ export const SITE = {
   NUM_WORKS_ON_HOMEPAGE: 2,
 }
 
+// Open Graph / Social Media Preview Image
+export const IMAGE = "/flow.jpeg"
+
 export const STUDIO = {
   TITLE: "Studio",
   DESCRIPTION: "Inside the art studio.",
