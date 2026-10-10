@@ -6,6 +6,8 @@ import { getSession } from "../../lib/auth"
 if (await getSession(Astro.request, Astro.locals)) {
   return Astro.redirect("/admin")
 }
+
+const error = Astro.url.searchParams.get("error")
 ---
 
 <!DOCTYPE html>
@@ -58,53 +60,22 @@ if (await getSession(Astro.request, Astro.locals)) {
       transition: background 0.15s;
     }
     button[type="submit"]:hover { background: #374151; }
-    button[type="submit"]:disabled { background: #9ca3af; cursor: not-allowed; }
     .error {
       color: #dc2626;
       font-size: 0.75rem;
       margin-top: 0.5rem;
-      display: none;
     }
   </style>
 </head>
 <body>
   <div class="card">
     <h1>Admin Login</h1>
-    <form id="login-form">
+    <form method="POST" action="/api/auth/login">
       <label for="password">Password</label>
       <input type="password" id="password" name="password" required autofocus />
-      <p class="error" id="error-msg">Incorrect password. Please try again.</p>
-      <button type="submit" id="submit-btn">Login</button>
+      {error && <p class="error">Incorrect password. Please try again.</p>}
+      <button type="submit">Login</button>
     </form>
   </div>
-
-  <script is:inline>
-    const form = document.getElementById('login-form')
-    const errorMsg = document.getElementById('error-msg')
-    const submitBtn = document.getElementById('submit-btn')
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault()
-      errorMsg.style.display = 'none'
-      submitBtn.disabled = true
-      submitBtn.textContent = 'Logging in...'
-
-      const formData = new FormData(form)
-      try {
-        const res = await fetch('/api/auth/login', { method: 'POST', body: formData })
-        if (res.ok) {
-          window.location.href = '/admin'
-        } else {
-          errorMsg.style.display = 'block'
-          submitBtn.disabled = false
-          submitBtn.textContent = 'Login'
-        }
-      } catch {
-        errorMsg.style.display = 'block'
-        submitBtn.disabled = false
-        submitBtn.textContent = 'Login'
-      }
-    })
-  </script>
 </body>
 </html>

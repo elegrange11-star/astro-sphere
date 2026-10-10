@@ -11,18 +11,18 @@ export const POST: APIRoute = async ({ request, locals }) => {
     import.meta.env.ADMIN_PASSWORD
 
   if (!expected || password !== expected) {
-    return new Response(JSON.stringify({ error: "Invalid password" }), {
-      status: 401,
-      headers: { "Content-Type": "application/json" },
+    return new Response(null, {
+      status: 302,
+      headers: { Location: "/admin/login?error=1" },
     })
   }
 
   const token = await signToken(locals)
-  return new Response(JSON.stringify({ ok: true }), {
-    status: 200,
+  return new Response(null, {
+    status: 302,
     headers: {
-      "Content-Type": "application/json",
-      "Set-Cookie": `admin_session=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=604800`,
+      Location: "/admin",
+      "Set-Cookie": `admin_session=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800`,
     },
   })
 }
