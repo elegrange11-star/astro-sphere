@@ -1,18 +1,19 @@
 import type { APIRoute } from "astro"
 import { getSession } from "../../../../lib/auth"
 import { getFile, putFile } from "../../../../lib/github"
-import { readFileSync, writeFileSync } from "fs"
 
 export const prerender = false
 
 const ARTWORKS_PATH = "src/data/artworks.json"
 const LOCAL_PATH = () => `${process.cwd()}/src/data/artworks.json`
 
-function readLocal() {
+async function readLocal(): Promise<string> {
+  const { readFileSync } = await import("fs")
   return readFileSync(LOCAL_PATH(), "utf-8")
 }
 
-function writeLocal(data: unknown) {
+async function writeLocal(data: unknown): Promise<void> {
+  const { writeFileSync } = await import("fs")
   writeFileSync(LOCAL_PATH(), JSON.stringify(data, null, 2))
 }
 
@@ -24,7 +25,7 @@ export const GET: APIRoute = async ({ request }) => {
     })
   }
   if (!import.meta.env.PROD) {
-    return new Response(readLocal(), { status: 200, headers: { "Content-Type": "application/json" } })
+    return new Response(await readLocal(), { status: 200, headers: { "Content-Type": "application/json" } })
   }
   const { content } = await getFile(ARTWORKS_PATH)
   return new Response(content, { status: 200, headers: { "Content-Type": "application/json" } })
@@ -39,9 +40,9 @@ export const POST: APIRoute = async ({ request }) => {
   }
   const newArtwork = await request.json()
   if (!import.meta.env.PROD) {
-    const data = JSON.parse(readLocal())
+    const data = JSON.parse(await readLocal())
     data.artworks.push(newArtwork)
-    writeLocal(data)
+    await writeLocal(data)
   } else {
     const { content, sha } = await getFile(ARTWORKS_PATH)
     const data = JSON.parse(content)

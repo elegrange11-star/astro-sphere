@@ -1,7 +1,6 @@
 import type { APIRoute } from "astro"
 import { getSession } from "../../../lib/auth"
 import { getFileSha, putFileBinary } from "../../../lib/github"
-import { writeFileSync } from "fs"
 
 export const prerender = false
 
@@ -29,7 +28,7 @@ export const POST: APIRoute = async ({ request }) => {
   const buffer = await file.arrayBuffer()
 
   if (!import.meta.env.PROD) {
-    // Dev mode: write directly to local public/ folder
+    const { writeFileSync } = await import("fs")
     writeFileSync(`${process.cwd()}/public/${filename}`, Buffer.from(buffer))
   } else {
     const repoPath = `public/${filename}`

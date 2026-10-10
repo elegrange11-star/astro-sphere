@@ -1,7 +1,6 @@
 import type { APIRoute } from "astro"
 import { getSession } from "../../../lib/auth"
 import { getFile, putFile } from "../../../lib/github"
-import { readFileSync, writeFileSync } from "fs"
 
 export const prerender = false
 
@@ -16,6 +15,7 @@ export const GET: APIRoute = async ({ request }) => {
     })
   }
   if (!import.meta.env.PROD) {
+    const { readFileSync } = await import("fs")
     return new Response(readFileSync(LOCAL_PATH(), "utf-8"), {
       status: 200,
       headers: { "Content-Type": "application/json" },
@@ -34,6 +34,7 @@ export const PUT: APIRoute = async ({ request }) => {
   }
   const updated = await request.json()
   if (!import.meta.env.PROD) {
+    const { writeFileSync } = await import("fs")
     writeFileSync(LOCAL_PATH(), JSON.stringify(updated, null, 2))
   } else {
     const { sha } = await getFile(STUDIO_PATH)

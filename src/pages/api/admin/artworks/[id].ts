@@ -1,18 +1,19 @@
 import type { APIRoute } from "astro"
 import { getSession } from "../../../../lib/auth"
 import { getFile, putFile } from "../../../../lib/github"
-import { readFileSync, writeFileSync } from "fs"
 
 export const prerender = false
 
 const ARTWORKS_PATH = "src/data/artworks.json"
 const LOCAL_PATH = () => `${process.cwd()}/src/data/artworks.json`
 
-function readLocal() {
+async function readLocal() {
+  const { readFileSync } = await import("fs")
   return JSON.parse(readFileSync(LOCAL_PATH(), "utf-8"))
 }
 
-function writeLocal(data: unknown) {
+async function writeLocal(data: unknown): Promise<void> {
+  const { writeFileSync } = await import("fs")
   writeFileSync(LOCAL_PATH(), JSON.stringify(data, null, 2))
 }
 
@@ -27,7 +28,7 @@ export const PUT: APIRoute = async ({ request, params }) => {
   const updated = await request.json()
 
   if (!import.meta.env.PROD) {
-    const data = readLocal()
+    const data = await readLocal()
     const idx = data.artworks.findIndex((a: { id: string }) => a.id === id)
     if (idx === -1) {
       return new Response(JSON.stringify({ error: "Not found" }), {
@@ -36,7 +37,7 @@ export const PUT: APIRoute = async ({ request, params }) => {
       })
     }
     data.artworks[idx] = { ...data.artworks[idx], ...updated }
-    writeLocal(data)
+    await writeLocal(data)
   } else {
     const { content, sha } = await getFile(ARTWORKS_PATH)
     const data = JSON.parse(content)
@@ -67,9 +68,9 @@ export const DELETE: APIRoute = async ({ request, params }) => {
   const { id } = params
 
   if (!import.meta.env.PROD) {
-    const data = readLocal()
+    const data = await readLocal()
     data.artworks = data.artworks.filter((a: { id: string }) => a.id !== id)
-    writeLocal(data)
+    await writeLocal(data)
   } else {
     const { content, sha } = await getFile(ARTWORKS_PATH)
     const data = JSON.parse(content)
