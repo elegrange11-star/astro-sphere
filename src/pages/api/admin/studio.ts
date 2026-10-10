@@ -21,7 +21,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
       headers: { "Content-Type": "application/json" },
     })
   }
-  const { content } = await getFile(STUDIO_PATH)
+  const { content } = await getFile(STUDIO_PATH, locals)
   return new Response(content, { status: 200, headers: { "Content-Type": "application/json" } })
 }
 
@@ -37,8 +37,8 @@ export const PUT: APIRoute = async ({ request, locals }) => {
     const { writeFileSync } = await import(/* @vite-ignore */ "fs")
     writeFileSync(LOCAL_PATH(), JSON.stringify(updated, null, 2))
   } else {
-    const { sha } = await getFile(STUDIO_PATH)
-    await putFile(STUDIO_PATH, JSON.stringify(updated, null, 2), sha)
+    const { sha } = await getFile(STUDIO_PATH, locals)
+    await putFile(STUDIO_PATH, JSON.stringify(updated, null, 2), sha, locals)
   }
   return new Response(JSON.stringify({ ok: true }), {
     status: 200,

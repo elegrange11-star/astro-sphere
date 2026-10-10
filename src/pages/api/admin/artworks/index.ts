@@ -27,7 +27,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
   if (!import.meta.env.PROD) {
     return new Response(await readLocal(), { status: 200, headers: { "Content-Type": "application/json" } })
   }
-  const { content } = await getFile(ARTWORKS_PATH)
+  const { content } = await getFile(ARTWORKS_PATH, locals)
   return new Response(content, { status: 200, headers: { "Content-Type": "application/json" } })
 }
 
@@ -44,10 +44,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
     data.artworks.push(newArtwork)
     await writeLocal(data)
   } else {
-    const { content, sha } = await getFile(ARTWORKS_PATH)
+    const { content, sha } = await getFile(ARTWORKS_PATH, locals)
     const data = JSON.parse(content)
     data.artworks.push(newArtwork)
-    await putFile(ARTWORKS_PATH, JSON.stringify(data, null, 2), sha)
+    await putFile(ARTWORKS_PATH, JSON.stringify(data, null, 2), sha, locals)
   }
   return new Response(JSON.stringify({ ok: true }), {
     status: 200,

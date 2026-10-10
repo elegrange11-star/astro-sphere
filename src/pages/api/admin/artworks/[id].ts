@@ -39,7 +39,7 @@ export const PUT: APIRoute = async ({ request, params, locals }) => {
     data.artworks[idx] = { ...data.artworks[idx], ...updated }
     await writeLocal(data)
   } else {
-    const { content, sha } = await getFile(ARTWORKS_PATH)
+    const { content, sha } = await getFile(ARTWORKS_PATH, locals)
     const data = JSON.parse(content)
     const idx = data.artworks.findIndex((a: { id: string }) => a.id === id)
     if (idx === -1) {
@@ -49,7 +49,7 @@ export const PUT: APIRoute = async ({ request, params, locals }) => {
       })
     }
     data.artworks[idx] = { ...data.artworks[idx], ...updated }
-    await putFile(ARTWORKS_PATH, JSON.stringify(data, null, 2), sha)
+    await putFile(ARTWORKS_PATH, JSON.stringify(data, null, 2), sha, locals)
   }
 
   return new Response(JSON.stringify({ ok: true }), {
@@ -72,10 +72,10 @@ export const DELETE: APIRoute = async ({ request, params, locals }) => {
     data.artworks = data.artworks.filter((a: { id: string }) => a.id !== id)
     await writeLocal(data)
   } else {
-    const { content, sha } = await getFile(ARTWORKS_PATH)
+    const { content, sha } = await getFile(ARTWORKS_PATH, locals)
     const data = JSON.parse(content)
     data.artworks = data.artworks.filter((a: { id: string }) => a.id !== id)
-    await putFile(ARTWORKS_PATH, JSON.stringify(data, null, 2), sha)
+    await putFile(ARTWORKS_PATH, JSON.stringify(data, null, 2), sha, locals)
   }
 
   return new Response(JSON.stringify({ ok: true }), {

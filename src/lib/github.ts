@@ -4,21 +4,13 @@ interface GitHubFileResponse {
   encoding: string
 }
 
-function getHeaders() {
+function getEnv(locals?: unknown) {
+  const rt = (locals as any)?.runtime?.env
   return {
-    Authorization: `Bearer ${import.meta.env.GITHUB_TOKEN}`,
-    "Content-Type": "application/json",
-    Accept: "application/vnd.github+json",
-    "X-GitHub-Api-Version": "2022-11-28",
+    token: rt?.GITHUB_TOKEN ?? import.meta.env.GITHUB_TOKEN ?? "",
+    repo: rt?.GITHUB_REPO ?? import.meta.env.GITHUB_REPO ?? "",
+    branch: rt?.GITHUB_BRANCH ?? import.meta.env.GITHUB_BRANCH ?? "main",
   }
-}
-
-function baseUrl(): string {
-  return `https://api.github.com/repos/${import.meta.env.GITHUB_REPO}/contents`
-}
-
-function branch(): string {
-  return import.meta.env.GITHUB_BRANCH || "main"
 }
 
 function base64ToText(b64: string): string {
@@ -35,54 +27,88 @@ function textToBase64(text: string): string {
   return btoa(binary)
 }
 
-export async function getFile(path: string): Promise<{ content: string; sha: string }> {
-  const res = await fetch(`${baseUrl()}/${path}?ref=${branch()}`, {
-    headers: getHeaders(),
-  })
+export async function getFile(
+  path: string,
+  locals?: unknown,
+): Promise<{ content: string; sha: string }> {
+  const { token, repo, branch } = getEnv(locals)
+  const res = await fetch(
+    `https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+    },
+  )
   if (!res.ok) throw new Error(`GitHub API error ${res.status}: ${await res.text()}`)
-  const data = await res.json() as GitHubFileResponse
+  const data = (await res.json()) as GitHubFileResponse
   return { content: base64ToText(data.content), sha: data.sha }
 }
 
-export async function putFile(path: string, content: string, sha?: string): Promise<void> {
-  const encoded = textToBase64(content)
+export async function putFile(
+  path: string,
+  content: string,
+  sha: string | undefined,
+  locals?: unknown,
+): Promise<void> {
+  const { token, repo, branch } = getEnv(locals)
   const body: Record<string, unknown> = {
     message: `Admin: update ${path}`,
-    content: encoded,
-    branch: branch(),
+    content: textToBase64(content),
+    branch,
   }
   if (sha) body.sha = sha
-  const res = await fetch(`${baseUrl()}/${path}`, {
+  const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
     method: "PUT",
-    headers: getHeaders(),
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+      Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+    },
     body: JSON.stringify(body),
   })
   if (!res.ok) throw new Error(`GitHub API error ${res.status}: ${await res.text()}`)
 }
 
-export async function putFileBinary(path: string, buffer: ArrayBuffer, sha?: string): Promise<void> {
+export async function putFileBinary(
+  path: string,
+  buffer: ArrayBuffer,
+  sha: string | undefined,
+  locals?: unknown,
+): Promise<void> {
+  const { token, repo, branch } = getEnv(locals)
   const bytes = new Uint8Array(buffer)
   let binary = ""
-  for (let i = 0; i < bytes.byteLength; i++) {
-    binary += String.fromCharCode(bytes[i])
-  }
+  for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i])
   const body: Record<string, unknown> = {
     message: `Admin: upload ${path}`,
     content: btoa(binary),
-    branch: branch(),
+    branch,
   }
   if (sha) body.sha = sha
-  const res = await fetch(`${baseUrl()}/${path}`, {
+  const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
     method: "PUT",
-    headers: getHeaders(),
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+      Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28",
+    },
     body: JSON.stringify(body),
   })
   if (!res.ok) throw new Error(`GitHub API error ${res.status}: ${await res.text()}`)
 }
 
-export async function getFileSha(path: string): Promise<string | undefined> {
+export async function getFileSha(
+  path: string,
+  locals?: unknown,
+): Promise<string | undefined> {
   try {
-    const { sha } = await getFile(path)
+    const { sha } = await getFile(path, locals)
     return sha
   } catch {
     return undefined

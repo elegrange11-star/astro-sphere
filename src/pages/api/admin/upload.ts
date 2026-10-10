@@ -32,8 +32,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     writeFileSync(`${process.cwd()}/public/${filename}`, Buffer.from(buffer))
   } else {
     const repoPath = `public/${filename}`
-    const sha = await getFileSha(repoPath)
-    await putFileBinary(repoPath, buffer, sha)
+    const sha = await getFileSha(repoPath, locals)
+    await putFileBinary(repoPath, buffer, sha, locals)
   }
 
   return new Response(JSON.stringify({ ok: true, path: `/${filename}` }), {
