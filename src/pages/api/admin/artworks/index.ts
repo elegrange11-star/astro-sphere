@@ -27,8 +27,15 @@ export const GET: APIRoute = async ({ request, locals }) => {
   if (!import.meta.env.PROD) {
     return new Response(await readLocal(), { status: 200, headers: { "Content-Type": "application/json" } })
   }
-  const { content } = await getFile(ARTWORKS_PATH, locals)
-  return new Response(content, { status: 200, headers: { "Content-Type": "application/json" } })
+  try {
+    const { content } = await getFile(ARTWORKS_PATH, locals)
+    return new Response(content, { status: 200, headers: { "Content-Type": "application/json" } })
+  } catch (err) {
+    return new Response(JSON.stringify({ error: String(err) }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    })
+  }
 }
 
 export const POST: APIRoute = async ({ request, locals }) => {
