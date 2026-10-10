@@ -18,6 +18,7 @@ function makeHeaders(token: string): Record<string, string> {
     "Content-Type": "application/json",
     Accept: "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",
+    "User-Agent": "elizabethlegrange-admin/1.0",
   }
   if (token) h.Authorization = `Bearer ${token}`
   return h
