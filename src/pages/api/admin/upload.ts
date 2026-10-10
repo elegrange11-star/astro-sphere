@@ -1,0 +1,44 @@
+import type { APIRoute } from "astro"
+import { getSession } from "../../../lib/auth"
+import { getFileSha, putFileBinary } from "../../../lib/github"
+import { writeFileSync } from "fs"
+
+export const prerender = false
+
+export const POST: APIRoute = async ({ request }) => {
+  if (!(await getSession(request))) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    })
+  }
+
+  const formData = await request.formData()
+  const file = formData.get("image") as File | null
+  if (!file || file.size === 0) {
+    return new Response(JSON.stringify({ error: "No image provided" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    })
+  }
+
+  const filename = file.name
+    .toLowerCase()
+    .replace(/[^a-z0-9._-]/g, "-")
+    .replace(/-+/g, "-")
+  const buffer = await file.arrayBuffer()
+
+  if (!import.meta.env.PROD) {
+    // Dev mode: write directly to local public/ folder
+    writeFileSync(`${process.cwd()}/public/${filename}`, Buffer.from(buffer))
+  } else {
+    const repoPath = `public/${filename}`
+    const sha = await getFileSha(repoPath)
+    await putFileBinary(repoPath, buffer, sha)
+  }
+
+  return new Response(JSON.stringify({ ok: true, path: `/${filename}` }), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  })
+}

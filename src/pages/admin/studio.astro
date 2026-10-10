@@ -1,0 +1,349 @@
+---
+export const prerender = false
+
+import { getSession } from "../../lib/auth"
+
+if (!(await getSession(Astro.request))) {
+  return Astro.redirect("/admin/login")
+}
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Studio Admin — Elizabeth Le Grange</title>
+  <style is:global>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f9fafb; min-height: 100vh; }
+
+    .header { background: #fff; border-bottom: 1px solid #e5e7eb; padding: 0.875rem 1.5rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+    .header h1 { font-size: 0.9375rem; font-weight: 500; color: #111; }
+    .header-right { display: flex; align-items: center; gap: 1rem; }
+    .nav-link { font-size: 0.8125rem; color: #6b7280; text-decoration: none; padding: 0.25rem 0.625rem; border-radius: 4px; }
+    .nav-link:hover { color: #111; background: #f3f4f6; }
+    .nav-link.active { color: #111; background: #f3f4f6; font-weight: 500; }
+    .status-msg { font-size: 0.8125rem; color: #16a34a; display: none; }
+    .status-msg.error { color: #dc2626; }
+    .btn-logout { font-size: 0.8125rem; color: #6b7280; background: none; border: none; cursor: pointer; padding: 0; }
+    .btn-logout:hover { color: #111; }
+
+    .main { max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .section-label { font-size: 0.6875rem; font-weight: 500; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1.5rem; }
+
+    .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .card-title { font-size: 0.8125rem; font-weight: 600; color: #374151; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid #f3f4f6; }
+
+    .form-grid { display: grid; gap: 1rem; }
+    .field label { display: block; font-size: 0.6875rem; font-weight: 500; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.375rem; }
+    .field input, .field textarea {
+      width: 100%; border: 1px solid #d1d5db; border-radius: 4px;
+      padding: 0.5rem 0.75rem; font-size: 0.875rem; font-family: inherit;
+      outline: none; transition: border-color 0.15s; color: #111; background: #fff;
+    }
+    .field input:focus, .field textarea:focus { border-color: #6b7280; }
+    .field textarea { resize: vertical; }
+    .field input[type="file"] { padding: 0.375rem 0.75rem; color: #6b7280; }
+
+    .preview-wrap { margin-bottom: 0.5rem; }
+    .preview-wrap img { max-height: 160px; max-width: 100%; object-fit: contain; border: 1px solid #e5e7eb; border-radius: 4px; }
+
+    /* Paragraphs */
+    .para-list { display: grid; gap: 0.75rem; }
+    .para-item { display: flex; gap: 0.5rem; align-items: flex-start; }
+    .para-item textarea { flex: 1; min-height: 80px; }
+    .btn-remove-para { background: #fff; border: 1px solid #fca5a5; color: #dc2626; border-radius: 4px; padding: 0.3rem 0.5rem; font-size: 0.75rem; cursor: pointer; flex-shrink: 0; margin-top: 0; line-height: 1.5; }
+    .btn-remove-para:hover { background: #fef2f2; }
+    .btn-add-para { background: #fff; border: 1px solid #d1d5db; color: #374151; border-radius: 4px; padding: 0.4rem 0.875rem; font-size: 0.8125rem; cursor: pointer; margin-top: 0.25rem; }
+    .btn-add-para:hover { border-color: #6b7280; }
+
+    .form-footer { display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem; padding-top: 1rem; }
+    .btn-save { background: #111; color: #fff; border: none; border-radius: 4px; padding: 0.5625rem 1.5rem; font-size: 0.875rem; font-weight: 500; cursor: pointer; }
+    .btn-save:hover { background: #374151; }
+    .btn-save:disabled { background: #9ca3af; cursor: not-allowed; }
+
+    .loading { text-align: center; padding: 3rem; color: #9ca3af; font-size: 0.875rem; }
+    .content-area { display: none; }
+
+    /* Studio image list */
+    .studio-images-list { display: grid; gap: 1rem; margin-bottom: 0.75rem; }
+    .studio-image-item { border: 1px solid #e5e7eb; border-radius: 6px; padding: 1rem; display: grid; gap: 0.75rem; }
+    .studio-image-item-header { display: flex; align-items: center; justify-content: space-between; }
+    .studio-image-item-label { font-size: 0.75rem; font-weight: 500; color: #6b7280; }
+    .studio-image-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; align-items: start; }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <h1>Admin</h1>
+    <div class="header-right">
+      <a href="/admin" class="nav-link">Artworks</a>
+      <a href="/admin/studio" class="nav-link active">Studio</a>
+      <span class="status-msg" id="status-msg"></span>
+      <button class="btn-logout" id="logout-btn">Logout</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <p class="section-label">Studio Page</p>
+
+    <div class="loading" id="loading">Loading…</div>
+
+    <div class="content-area" id="content-area">
+
+      <!-- Banner -->
+      <div class="card">
+        <div class="card-title">Banner Image</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Current Image</label>
+            <div class="preview-wrap"><img id="banner-preview" src="" alt="" /></div>
+            <input type="hidden" id="banner-src" />
+            <input type="file" id="banner-file" accept="image/*" />
+          </div>
+          <div class="field">
+            <label>Alt Text</label>
+            <input type="text" id="banner-alt" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Heading -->
+      <div class="card">
+        <div class="card-title">Heading</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Main Heading</label>
+            <input type="text" id="heading" />
+          </div>
+          <div class="field">
+            <label>Subtitle</label>
+            <input type="text" id="subtitle" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Bio Paragraphs -->
+      <div class="card">
+        <div class="card-title">Bio Text</div>
+        <div class="para-list" id="para-list"></div>
+        <button class="btn-add-para" id="add-para-btn">+ Add Paragraph</button>
+      </div>
+
+      <!-- Studio Images -->
+      <div class="card">
+        <div class="card-title">Studio Images</div>
+        <div class="studio-images-list" id="studio-images-list"></div>
+        <button class="btn-add-para" id="add-image-btn">+ Add Image</button>
+      </div>
+
+      <div class="form-footer">
+        <button class="btn-save" id="save-btn">Save Changes</button>
+      </div>
+
+    </div>
+  </main>
+
+  <script is:inline>
+    function $(id) { return document.getElementById(id) }
+
+    function showStatus(msg, isError) {
+      const el = $('status-msg')
+      el.textContent = msg
+      el.className = 'status-msg' + (isError ? ' error' : '')
+      el.style.display = 'inline'
+      setTimeout(() => { el.style.display = 'none' }, 6000)
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+    }
+
+    // ── Paragraphs ─────────────────────────────────────────────────────────────
+    function renderParas(paras) {
+      $('para-list').innerHTML = paras.map((p, i) => `
+        <div class="para-item" data-index="${i}">
+          <textarea rows="4">${escapeHtml(p)}</textarea>
+          <button class="btn-remove-para" onclick="removePara(${i})">Remove</button>
+        </div>
+      `).join('')
+    }
+
+    function getParagraphs() {
+      return Array.from($('para-list').querySelectorAll('textarea')).map(t => t.value.trim()).filter(Boolean)
+    }
+
+    function removePara(index) {
+      const paras = getParagraphs()
+      paras.splice(index, 1)
+      renderParas(paras)
+    }
+
+    $('add-para-btn').addEventListener('click', () => {
+      const paras = getParagraphs()
+      paras.push('')
+      renderParas(paras)
+      const textareas = $('para-list').querySelectorAll('textarea')
+      textareas[textareas.length - 1].focus()
+    })
+
+    // ── Studio images ───────────────────────────────────────────────────────────
+    function renderStudioImages(images) {
+      $('studio-images-list').innerHTML = images.map((img, i) => `
+        <div class="studio-image-item" data-index="${i}">
+          <div class="studio-image-item-header">
+            <span class="studio-image-item-label">Image ${i + 1}</span>
+            <button class="btn-remove-para" onclick="removeStudioImage(${i})">Remove</button>
+          </div>
+          <div class="studio-image-row">
+            <div class="field">
+              <label>Image</label>
+              ${img.src ? `<div class="preview-wrap"><img src="${escapeHtml(img.src)}" alt="" style="max-height:100px" /></div>` : ''}
+              <input type="hidden" class="si-src" value="${escapeHtml(img.src || '')}" />
+              <input type="file" class="si-file" accept="image/*" onchange="previewStudioImage(this, ${i})" />
+            </div>
+            <div class="field">
+              <label>Alt Text</label>
+              <input type="text" class="si-alt" value="${escapeHtml(img.alt || '')}" placeholder="Describe the image" />
+            </div>
+          </div>
+        </div>
+      `).join('')
+    }
+
+    function previewStudioImage(input, index) {
+      const file = input.files[0]
+      if (!file) return
+      const item = $('studio-images-list').querySelector(`[data-index="${index}"]`)
+      let preview = item.querySelector('.preview-wrap img')
+      if (!preview) {
+        const wrap = document.createElement('div')
+        wrap.className = 'preview-wrap'
+        wrap.innerHTML = '<img style="max-height:100px" />'
+        input.parentNode.insertBefore(wrap, input)
+        preview = wrap.querySelector('img')
+      }
+      preview.src = URL.createObjectURL(file)
+    }
+
+    function removeStudioImage(index) {
+      const images = getStudioImages()
+      images.splice(index, 1)
+      renderStudioImages(images)
+    }
+
+    function getStudioImages() {
+      return Array.from($('studio-images-list').querySelectorAll('.studio-image-item')).map(item => ({
+        src: item.querySelector('.si-src').value,
+        alt: item.querySelector('.si-alt').value,
+        _file: item.querySelector('.si-file').files[0] || null,
+      }))
+    }
+
+    $('add-image-btn').addEventListener('click', () => {
+      const images = getStudioImages()
+      images.push({ src: '', alt: '', _file: null })
+      renderStudioImages(images)
+    })
+
+    // ── Upload helper ──────────────────────────────────────────────────────────
+    async function uploadFile(file) {
+      const fd = new FormData()
+      fd.append('image', file)
+      const res = await fetch('/api/admin/upload', { method: 'POST', body: fd })
+      if (!res.ok) throw new Error('Image upload failed')
+      return (await res.json()).path
+    }
+
+    async function uploadIfSelected(fileInput, currentSrc) {
+      const file = fileInput.files[0]
+      if (!file) return currentSrc
+      return uploadFile(file)
+    }
+
+    // ── Load ───────────────────────────────────────────────────────────────────
+    async function load() {
+      try {
+        const res = await fetch('/api/admin/studio')
+        if (res.status === 401) { window.location.href = '/admin/login'; return }
+        if (!res.ok) throw new Error('Failed to load studio data')
+        const data = await res.json()
+
+        $('banner-src').value = data.bannerSrc || ''
+        $('banner-preview').src = data.bannerSrc || ''
+        $('banner-alt').value = data.bannerAlt || ''
+        $('heading').value = data.heading || ''
+        $('subtitle').value = data.subtitle || ''
+        renderParas(data.paragraphs || [])
+        renderStudioImages(data.studioImages || [])
+
+        $('loading').style.display = 'none'
+        $('content-area').style.display = 'block'
+      } catch (err) {
+        $('loading').textContent = 'Error loading studio data: ' + err.message
+      }
+    }
+
+    // ── Save ───────────────────────────────────────────────────────────────────
+    $('save-btn').addEventListener('click', async () => {
+      const btn = $('save-btn')
+      btn.disabled = true
+      btn.textContent = 'Saving…'
+
+      try {
+        const bannerSrc = await uploadIfSelected($('banner-file'), $('banner-src').value)
+
+        // Upload any new studio images
+        const rawImages = getStudioImages()
+        const studioImages = await Promise.all(rawImages.map(async img => ({
+          src: img._file ? await uploadFile(img._file) : img.src,
+          alt: img.alt,
+        })))
+
+        const payload = {
+          bannerSrc,
+          bannerAlt: $('banner-alt').value,
+          heading: $('heading').value,
+          subtitle: $('subtitle').value,
+          paragraphs: getParagraphs(),
+          studioImages,
+        }
+
+        const res = await fetch('/api/admin/studio', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+        if (!res.ok) throw new Error('Save failed')
+
+        $('banner-src').value = bannerSrc
+        $('banner-file').value = ''
+        renderStudioImages(studioImages)
+
+        showStatus('Saved! Deploying in ~1–2 min…')
+      } catch (err) {
+        showStatus('Error: ' + err.message, true)
+      } finally {
+        btn.disabled = false
+        btn.textContent = 'Save Changes'
+      }
+    })
+
+    // ── Logout ─────────────────────────────────────────────────────────────────
+    $('logout-btn').addEventListener('click', async () => {
+      await fetch('/api/auth/logout', { method: 'POST' })
+      window.location.href = '/admin/login'
+    })
+
+    // ── Banner file preview ─────────────────────────────────────────────────────
+    $('banner-file').addEventListener('change', e => {
+      const f = e.target.files[0]
+      if (f) $('banner-preview').src = URL.createObjectURL(f)
+    })
+
+    load()
+  </script>
+</body>
+</html>

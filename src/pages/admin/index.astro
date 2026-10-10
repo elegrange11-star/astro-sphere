@@ -1,0 +1,411 @@
+---
+export const prerender = false
+
+import { getSession } from "../../lib/auth"
+
+if (!(await getSession(Astro.request))) {
+  return Astro.redirect("/admin/login")
+}
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Elizabeth Le Grange</title>
+  <style is:global>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f9fafb; min-height: 100vh; }
+
+    /* Header */
+    .header { background: #fff; border-bottom: 1px solid #e5e7eb; padding: 0.875rem 1.5rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+    .header h1 { font-size: 0.9375rem; font-weight: 500; color: #111; }
+    .header-right { display: flex; align-items: center; gap: 1rem; }
+    .status-msg { font-size: 0.8125rem; color: #16a34a; display: none; }
+    .status-msg.error { color: #dc2626; }
+    .nav-link { font-size: 0.8125rem; color: #6b7280; text-decoration: none; padding: 0.25rem 0.625rem; border-radius: 4px; }
+    .nav-link:hover { color: #111; background: #f3f4f6; }
+    .nav-link.active { color: #111; background: #f3f4f6; font-weight: 500; }
+    .btn-logout { font-size: 0.8125rem; color: #6b7280; background: none; border: none; cursor: pointer; padding: 0; }
+    .btn-logout:hover { color: #111; }
+
+    /* Main */
+    .main { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+    .section-label { font-size: 0.6875rem; font-weight: 500; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.08em; }
+    .btn-add { background: #111; color: #fff; border: none; border-radius: 4px; padding: 0.5rem 1rem; font-size: 0.8125rem; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+    .btn-add:hover { background: #374151; }
+
+    /* Loading */
+    .loading { text-align: center; padding: 3rem; color: #9ca3af; font-size: 0.875rem; }
+
+    /* Table */
+    .table-wrap { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; display: none; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
+    thead th { text-align: left; padding: 0.75rem 1rem; font-size: 0.6875rem; font-weight: 500; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #e5e7eb; }
+    tbody tr { border-bottom: 1px solid #f3f4f6; transition: background 0.1s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #f9fafb; }
+    tbody td { padding: 0.75rem 1rem; color: #374151; vertical-align: middle; }
+    .thumb { width: 48px; height: 48px; object-fit: cover; border-radius: 3px; border: 1px solid #e5e7eb; display: block; }
+    .thumb-placeholder { width: 48px; height: 48px; background: #f3f4f6; border-radius: 3px; border: 1px solid #e5e7eb; }
+    .td-order { width: 3rem; color: #9ca3af; }
+    .td-thumb { width: 4rem; }
+    .td-title { font-weight: 500; color: #111; }
+    .td-year { width: 4rem; color: #6b7280; }
+    .td-medium { color: #6b7280; max-width: 200px; }
+    .td-actions { width: 8rem; white-space: nowrap; }
+    .btn-edit, .btn-delete { font-size: 0.75rem; padding: 0.3rem 0.625rem; border-radius: 3px; border: 1px solid; cursor: pointer; font-weight: 500; transition: all 0.1s; }
+    .btn-edit { background: #fff; border-color: #d1d5db; color: #374151; margin-right: 0.375rem; }
+    .btn-edit:hover { border-color: #6b7280; color: #111; }
+    .btn-delete { background: #fff; border-color: #fca5a5; color: #dc2626; }
+    .btn-delete:hover { background: #fef2f2; }
+
+    /* Modal overlay */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: none; align-items: center; justify-content: center; z-index: 50; padding: 1rem; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: #fff; border-radius: 8px; width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto; }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.5rem; border-bottom: 1px solid #e5e7eb; position: sticky; top: 0; background: #fff; z-index: 1; }
+    .modal-header h2 { font-size: 0.9375rem; font-weight: 500; color: #111; }
+    .btn-close { background: none; border: none; color: #9ca3af; font-size: 1.25rem; cursor: pointer; line-height: 1; padding: 0.25rem; }
+    .btn-close:hover { color: #374151; }
+    .modal-body { padding: 1.5rem; }
+
+    /* Form */
+    .form-grid { display: grid; gap: 1rem; }
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .field label { display: block; font-size: 0.6875rem; font-weight: 500; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.375rem; }
+    .field input, .field textarea, .field select {
+      width: 100%; border: 1px solid #d1d5db; border-radius: 4px;
+      padding: 0.5rem 0.75rem; font-size: 0.875rem; font-family: inherit;
+      outline: none; transition: border-color 0.15s; color: #111;
+      background: #fff;
+    }
+    .field input:focus, .field textarea:focus { border-color: #6b7280; }
+    .field textarea { resize: vertical; min-height: 80px; }
+    .field input[type="file"] { padding: 0.375rem 0.75rem; color: #6b7280; }
+    .preview-wrap { margin-bottom: 0.5rem; display: none; }
+    .preview-wrap img { max-height: 120px; object-fit: contain; border: 1px solid #e5e7eb; border-radius: 4px; }
+    .form-footer { display: flex; align-items: center; justify-content: flex-end; gap: 0.75rem; padding-top: 0.5rem; border-top: 1px solid #f3f4f6; margin-top: 0.5rem; }
+    .btn-cancel { background: none; border: none; font-size: 0.875rem; color: #6b7280; cursor: pointer; padding: 0.5rem; }
+    .btn-cancel:hover { color: #111; }
+    .btn-save { background: #111; color: #fff; border: none; border-radius: 4px; padding: 0.5625rem 1.25rem; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+    .btn-save:hover { background: #374151; }
+    .btn-save:disabled { background: #9ca3af; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <h1>Admin</h1>
+    <div class="header-right">
+      <a href="/admin" class="nav-link active">Artworks</a>
+      <a href="/admin/studio" class="nav-link">Studio</a>
+      <span class="status-msg" id="status-msg"></span>
+      <button class="btn-logout" id="logout-btn">Logout</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="toolbar">
+      <span class="section-label">Artworks</span>
+      <button class="btn-add" id="add-btn">+ Add Artwork</button>
+    </div>
+
+    <div class="loading" id="loading">Loading artworks…</div>
+
+    <div class="table-wrap" id="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="td-order">#</th>
+            <th class="td-thumb">Image</th>
+            <th>Title</th>
+            <th class="td-year">Year</th>
+            <th class="td-medium">Medium</th>
+            <th class="td-actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="artworks-tbody"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modal-title">Add Artwork</h2>
+        <button class="btn-close" id="modal-close" aria-label="Close">&#x2715;</button>
+      </div>
+      <div class="modal-body">
+        <form id="artwork-form" class="form-grid">
+          <input type="hidden" id="form-id" name="id" />
+
+          <div class="field">
+            <label>Image</label>
+            <div class="preview-wrap" id="preview-wrap">
+              <img id="preview-img" src="" alt="Preview" />
+            </div>
+            <input type="hidden" id="form-src" name="src" />
+            <input type="file" name="image" id="form-image" accept="image/*" />
+          </div>
+
+          <div class="field">
+            <label>Title <span style="color:#dc2626">*</span></label>
+            <input type="text" name="title" id="form-title" required placeholder="e.g. Flow" />
+          </div>
+
+          <div class="field">
+            <label>Alt Text</label>
+            <input type="text" name="alt" id="form-alt" placeholder="Describe the image for accessibility" />
+          </div>
+
+          <div class="field">
+            <label>Medium</label>
+            <input type="text" name="medium" id="form-medium" placeholder="e.g. Oil on Canvas" />
+          </div>
+
+          <div class="form-row-2">
+            <div class="field">
+              <label>Dimensions</label>
+              <input type="text" name="dimensions" id="form-dimensions" placeholder="e.g. 60 x 80 cm" />
+            </div>
+            <div class="field">
+              <label>Year</label>
+              <input type="text" name="year" id="form-year" placeholder="e.g. 2026" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Description</label>
+            <textarea name="description" id="form-description" placeholder="A short poetic description of the work…"></textarea>
+          </div>
+
+          <div class="form-row-2">
+            <div class="field">
+              <label>Group Key <span style="color:#9ca3af;font-weight:400;text-transform:none">(optional)</span></label>
+              <input type="text" name="group" id="form-group" placeholder="e.g. gam-zeh" />
+            </div>
+            <div class="field">
+              <label>Order</label>
+              <input type="number" name="order" id="form-order" placeholder="Display position" min="1" />
+            </div>
+          </div>
+
+          <div class="form-footer">
+            <button type="button" class="btn-cancel" id="form-cancel">Cancel</button>
+            <button type="submit" class="btn-save" id="form-save">Save Artwork</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline>
+    let artworks = []
+    let editingId = null
+
+    const $ = (id) => document.getElementById(id)
+
+    // ── Status message ────────────────────────────────────────────────────────
+    function showStatus(msg, isError = false) {
+      const el = $('status-msg')
+      el.textContent = msg
+      el.className = 'status-msg' + (isError ? ' error' : '')
+      el.style.display = 'inline'
+      setTimeout(() => { el.style.display = 'none' }, 6000)
+    }
+
+    // ── Load artworks ─────────────────────────────────────────────────────────
+    async function loadArtworks() {
+      try {
+        const res = await fetch('/api/admin/artworks')
+        if (res.status === 401) { window.location.href = '/admin/login'; return }
+        if (!res.ok) throw new Error('Failed to load artworks')
+        const data = await res.json()
+        artworks = data.artworks.sort((a, b) => a.order - b.order)
+        renderTable()
+      } catch (err) {
+        $('loading').textContent = 'Error loading artworks. ' + err.message
+      }
+    }
+
+    // ── Render table ──────────────────────────────────────────────────────────
+    function renderTable() {
+      $('loading').style.display = 'none'
+      $('table-wrap').style.display = 'block'
+      $('artworks-tbody').innerHTML = artworks.map(a => `
+        <tr>
+          <td class="td-order">${a.order}</td>
+          <td class="td-thumb">
+            ${a.src
+              ? `<img class="thumb" src="${escapeHtml(a.src)}" alt="${escapeHtml(a.alt || '')}" loading="lazy" />`
+              : `<div class="thumb-placeholder"></div>`}
+          </td>
+          <td class="td-title">${escapeHtml(a.title)}${a.group ? `<br><span style="font-size:0.7rem;color:#9ca3af;font-weight:400">group: ${escapeHtml(a.group)}</span>` : ''}</td>
+          <td class="td-year">${escapeHtml(a.year)}</td>
+          <td class="td-medium">${escapeHtml(a.medium)}</td>
+          <td class="td-actions">
+            <button class="btn-edit" onclick="openEdit('${escapeHtml(a.id)}')">Edit</button>
+            <button class="btn-delete" onclick="confirmDelete('${escapeHtml(a.id)}', '${escapeHtml(a.title)}')">Delete</button>
+          </td>
+        </tr>
+      `).join('')
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+    }
+
+    // ── Modal ─────────────────────────────────────────────────────────────────
+    function openModal() {
+      $('modal-overlay').classList.add('open')
+      document.body.style.overflow = 'hidden'
+    }
+
+    function closeModal() {
+      $('modal-overlay').classList.remove('open')
+      document.body.style.overflow = ''
+      $('artwork-form').reset()
+      $('form-src').value = ''
+      $('preview-wrap').style.display = 'none'
+      editingId = null
+    }
+
+    // ── Add ───────────────────────────────────────────────────────────────────
+    $('add-btn').addEventListener('click', () => {
+      editingId = null
+      $('modal-title').textContent = 'Add Artwork'
+      $('form-order').value = artworks.length + 1
+      openModal()
+    })
+
+    // ── Edit ──────────────────────────────────────────────────────────────────
+    function openEdit(id) {
+      const a = artworks.find(x => x.id === id)
+      if (!a) return
+      editingId = id
+      $('modal-title').textContent = 'Edit Artwork'
+      $('form-id').value = a.id
+      $('form-src').value = a.src || ''
+      $('form-title').value = a.title || ''
+      $('form-alt').value = a.alt || ''
+      $('form-medium').value = a.medium || ''
+      $('form-dimensions').value = a.dimensions || ''
+      $('form-year').value = a.year || ''
+      $('form-description').value = a.description || ''
+      $('form-group').value = a.group || ''
+      $('form-order').value = a.order || ''
+      if (a.src) {
+        $('preview-img').src = a.src
+        $('preview-wrap').style.display = 'block'
+      }
+      openModal()
+    }
+
+    // Image preview on file select
+    $('form-image').addEventListener('change', (e) => {
+      const file = e.target.files[0]
+      if (!file) return
+      const url = URL.createObjectURL(file)
+      $('preview-img').src = url
+      $('preview-wrap').style.display = 'block'
+    })
+
+    // ── Delete ────────────────────────────────────────────────────────────────
+    async function confirmDelete(id, title) {
+      if (!confirm(`Delete "${title}"?\n\nThis will commit the change to GitHub and trigger a redeploy.`)) return
+      try {
+        const res = await fetch(`/api/admin/artworks/${id}`, { method: 'DELETE' })
+        if (!res.ok) throw new Error('Delete failed')
+        showStatus('Deleted. Deploying in ~1–2 min…')
+        await loadArtworks()
+      } catch (err) {
+        showStatus('Error: ' + err.message, true)
+      }
+    }
+
+    // ── Save form ─────────────────────────────────────────────────────────────
+    $('artwork-form').addEventListener('submit', async (e) => {
+      e.preventDefault()
+      const saveBtn = $('form-save')
+      saveBtn.disabled = true
+      saveBtn.textContent = 'Saving…'
+
+      try {
+        let src = $('form-src').value
+
+        // Upload new image if selected
+        const imageFile = $('form-image').files[0]
+        if (imageFile) {
+          saveBtn.textContent = 'Uploading image…'
+          const uploadData = new FormData()
+          uploadData.append('image', imageFile)
+          const uploadRes = await fetch('/api/admin/upload', { method: 'POST', body: uploadData })
+          if (!uploadRes.ok) throw new Error('Image upload failed')
+          const uploadJson = await uploadRes.json()
+          src = uploadJson.path
+        }
+
+        const formData = new FormData($('artwork-form'))
+        const title = formData.get('title')
+        const artwork = {
+          id: editingId || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, ''),
+          src,
+          alt: formData.get('alt') || '',
+          title,
+          medium: formData.get('medium') || '',
+          dimensions: formData.get('dimensions') || '',
+          year: formData.get('year') || '',
+          description: formData.get('description') || '',
+          group: formData.get('group') || null,
+          order: parseInt(formData.get('order')) || artworks.length + 1,
+        }
+
+        saveBtn.textContent = 'Saving…'
+        let res
+        if (editingId) {
+          res = await fetch(`/api/admin/artworks/${editingId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(artwork),
+          })
+        } else {
+          res = await fetch('/api/admin/artworks', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(artwork),
+          })
+        }
+
+        if (!res.ok) throw new Error('Save failed')
+        closeModal()
+        showStatus('Saved! Deploying in ~1–2 min…')
+        await loadArtworks()
+      } catch (err) {
+        showStatus('Error: ' + err.message, true)
+      } finally {
+        saveBtn.disabled = false
+        saveBtn.textContent = 'Save Artwork'
+      }
+    })
+
+    // ── Close / cancel ────────────────────────────────────────────────────────
+    $('modal-close').addEventListener('click', closeModal)
+    $('form-cancel').addEventListener('click', closeModal)
+    $('modal-overlay').addEventListener('click', (e) => { if (e.target === $('modal-overlay')) closeModal() })
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal() })
+
+    // ── Logout ────────────────────────────────────────────────────────────────
+    $('logout-btn').addEventListener('click', async () => {
+      await fetch('/api/auth/logout', { method: 'POST' })
+      window.location.href = '/admin/login'
+    })
+
+    // ── Init ──────────────────────────────────────────────────────────────────
+    loadArtworks()
+  </script>
+</body>
+</html>
