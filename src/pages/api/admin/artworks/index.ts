@@ -8,12 +8,12 @@ const ARTWORKS_PATH = "src/data/artworks.json"
 const LOCAL_PATH = () => `${process.cwd()}/src/data/artworks.json`
 
 async function readLocal(): Promise<string> {
-  const { readFileSync } = await import("fs")
+  const { readFileSync } = await import(/* @vite-ignore */ "fs")
   return readFileSync(LOCAL_PATH(), "utf-8")
 }
 
 async function writeLocal(data: unknown): Promise<void> {
-  const { writeFileSync } = await import("fs")
+  const { writeFileSync } = await import(/* @vite-ignore */ "fs")
   writeFileSync(LOCAL_PATH(), JSON.stringify(data, null, 2))
 }
 

@@ -28,7 +28,7 @@ export const POST: APIRoute = async ({ request }) => {
   const buffer = await file.arrayBuffer()
 
   if (!import.meta.env.PROD) {
-    const { writeFileSync } = await import("fs")
+    const { writeFileSync } = await import(/* @vite-ignore */ "fs")
     writeFileSync(`${process.cwd()}/public/${filename}`, Buffer.from(buffer))
   } else {
     const repoPath = `public/${filename}`
