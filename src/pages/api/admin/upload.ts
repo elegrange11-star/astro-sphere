@@ -4,8 +4,8 @@ import { getFileSha, putFileBinary } from "../../../lib/github"
 
 export const prerender = false
 
-export const POST: APIRoute = async ({ request }) => {
-  if (!(await getSession(request))) {
+export const POST: APIRoute = async ({ request, locals }) => {
+  if (!(await getSession(request, locals))) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
       headers: { "Content-Type": "application/json" },

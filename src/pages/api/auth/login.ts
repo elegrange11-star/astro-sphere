@@ -3,10 +3,12 @@ import { signToken } from "../../../lib/auth"
 
 export const prerender = false
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   const body = await request.formData()
   const password = body.get("password")?.toString() ?? ""
-  const expected = import.meta.env.ADMIN_PASSWORD
+  const expected =
+    (locals as any)?.runtime?.env?.ADMIN_PASSWORD ??
+    import.meta.env.ADMIN_PASSWORD
 
   if (!expected || password !== expected) {
     return new Response(JSON.stringify({ error: "Invalid password" }), {
@@ -15,7 +17,7 @@ export const POST: APIRoute = async ({ request }) => {
     })
   }
 
-  const token = await signToken()
+  const token = await signToken(locals)
   return new Response(JSON.stringify({ ok: true }), {
     status: 200,
     headers: {

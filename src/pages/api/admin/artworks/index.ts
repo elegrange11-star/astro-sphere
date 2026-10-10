@@ -17,8 +17,8 @@ async function writeLocal(data: unknown): Promise<void> {
   writeFileSync(LOCAL_PATH(), JSON.stringify(data, null, 2))
 }
 
-export const GET: APIRoute = async ({ request }) => {
-  if (!(await getSession(request))) {
+export const GET: APIRoute = async ({ request, locals }) => {
+  if (!(await getSession(request, locals))) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
       headers: { "Content-Type": "application/json" },
@@ -31,8 +31,8 @@ export const GET: APIRoute = async ({ request }) => {
   return new Response(content, { status: 200, headers: { "Content-Type": "application/json" } })
 }
 
-export const POST: APIRoute = async ({ request }) => {
-  if (!(await getSession(request))) {
+export const POST: APIRoute = async ({ request, locals }) => {
+  if (!(await getSession(request, locals))) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
       headers: { "Content-Type": "application/json" },

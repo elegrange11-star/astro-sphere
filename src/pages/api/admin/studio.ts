@@ -7,8 +7,8 @@ export const prerender = false
 const STUDIO_PATH = "src/data/studio.json"
 const LOCAL_PATH = () => `${process.cwd()}/src/data/studio.json`
 
-export const GET: APIRoute = async ({ request }) => {
-  if (!(await getSession(request))) {
+export const GET: APIRoute = async ({ request, locals }) => {
+  if (!(await getSession(request, locals))) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
       headers: { "Content-Type": "application/json" },
@@ -25,8 +25,8 @@ export const GET: APIRoute = async ({ request }) => {
   return new Response(content, { status: 200, headers: { "Content-Type": "application/json" } })
 }
 
-export const PUT: APIRoute = async ({ request }) => {
-  if (!(await getSession(request))) {
+export const PUT: APIRoute = async ({ request, locals }) => {
+  if (!(await getSession(request, locals))) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
       headers: { "Content-Type": "application/json" },
