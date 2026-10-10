@@ -31,7 +31,13 @@ export const GET: APIRoute = async ({ request, locals }) => {
     const { content } = await getFile(ARTWORKS_PATH, locals)
     return new Response(content, { status: 200, headers: { "Content-Type": "application/json" } })
   } catch (err) {
-    return new Response(JSON.stringify({ error: String(err) }), {
+    const rt = (locals as any)?.runtime?.env
+    return new Response(JSON.stringify({
+      error: String(err),
+      hasRuntime: !!(locals as any)?.runtime,
+      hasToken: !!rt?.GITHUB_TOKEN,
+      hasRepo: !!rt?.GITHUB_REPO,
+    }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     })
