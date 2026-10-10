@@ -11,4 +11,9 @@ export default defineConfig({
   output: "hybrid",
   adapter: cloudflare(),
   integrations: [mdx(), solidJs(), tailwind({ applyBaseStyles: false })],
+  vite: {
+    ssr: {
+      external: ["fs", "node:fs"],
+    },
+  },
 })
